@@ -2,7 +2,7 @@
 {
     public interface IUrlRepository
     {
-        void Add(string longUrl, string shortUrl);
+        bool Add(string longUrl, string shortUrl);
 
         string GetLongUrl(string shortUrl);
     }

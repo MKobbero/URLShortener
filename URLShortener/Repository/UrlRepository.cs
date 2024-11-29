@@ -4,9 +4,9 @@
     {
         private Dictionary<string, string> _urls;
 
-        public void Add(string longUrl, string shortUrl)
+        public bool Add(string longUrl, string shortUrl)
         {
-            _urls.TryAdd(shortUrl, longUrl);
+            return _urls.TryAdd(shortUrl, longUrl);
         }
 
         public string GetLongUrl(string shortUrl)

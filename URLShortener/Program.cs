@@ -1,4 +1,6 @@
 
+using URLShortener.Repository;
+
 namespace URLShortener
 {
     public class Program
@@ -13,8 +15,8 @@ namespace URLShortener
             // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
             builder.Services.AddEndpointsApiExplorer();
             builder.Services.AddSwaggerGen();
-            
 
+            builder.Services.AddScoped<IUrlRepository, UrlRepository>();
 
             var app = builder.Build();
 

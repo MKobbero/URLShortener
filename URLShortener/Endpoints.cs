@@ -1,4 +1,6 @@
-﻿namespace URLShortener
+﻿using URLShortener.Repository;
+
+namespace URLShortener
 {
     public static class Endpoints
     {
@@ -13,7 +15,7 @@
                 .WithOpenApi();
         }
 
-        private static void GetUrl(HttpContext context)
+        private static void GetUrl(HttpContext context, IUrlRepository urlRepository)
         {
             context.Response.Redirect("https://www.google.dk/");
             return;
@@ -24,9 +26,9 @@
             //    return TypedResults.Ok(result);
         }
 
-        private static void ShortenUrl(HttpContext context, ShortenUrlRequest request)
+        private static void ShortenUrl(HttpContext context, IUrlRepository urlRepository, ShortenUrlRequest request)
         {
-
+            urlRepository.Add("hugo", request.Url);
         }
     }
 }
