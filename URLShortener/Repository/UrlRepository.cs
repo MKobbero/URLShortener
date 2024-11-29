@@ -4,14 +4,20 @@
     {
         private Dictionary<string, string> _urls;
 
-        public bool Add(string longUrl, string shortUrl)
+        public UrlRepository()
+        {
+            _urls = new Dictionary<string, string>();
+        }
+
+        public bool Add(string shortUrl, string longUrl)
         {
             return _urls.TryAdd(shortUrl, longUrl);
         }
 
-        public string GetLongUrl(string shortUrl)
+        public string? GetLongUrl(string shortUrl)
         {
-            throw new NotImplementedException();
+            _urls.TryGetValue(shortUrl, out string url);
+            return url;
         }
     }
 }

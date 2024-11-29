@@ -1,4 +1,7 @@
-﻿using URLShortener.Repository;
+﻿using Sqids;
+using URLShortener.Contracts;
+using URLShortener.Encoding;
+using URLShortener.Repository;
 
 namespace URLShortener
 {
@@ -17,7 +20,16 @@ namespace URLShortener
 
         private static void GetUrl(HttpContext context, IUrlRepository urlRepository)
         {
-            context.Response.Redirect("https://www.google.dk/");
+            string shortUrl = context.Request.Path.Value.Remove(0,1);
+
+            string longUrl = urlRepository.GetLongUrl(shortUrl);
+            if (longUrl == null)
+            {
+                context.Response.StatusCode = 404;
+                return;
+            }
+
+            context.Response.Redirect(longUrl);
             return;
 
             //if (result == null)
@@ -26,9 +38,19 @@ namespace URLShortener
             //    return TypedResults.Ok(result);
         }
 
-        private static void ShortenUrl(HttpContext context, IUrlRepository urlRepository, ShortenUrlRequest request)
+        private static ShortenUrlResponse ShortenUrl(HttpContext context, 
+            IShortUrlEncoder shortUrlEncoder,
+            IUrlRepository urlRepository, 
+            ShortenUrlRequest request)
         {
-            urlRepository.Add("hugo", request.Url);
+            string squid;
+            do
+            {
+                squid = shortUrlEncoder.GetNextSquid();
+            }
+            while (!urlRepository.Add(squid, request.url));
+
+            return new ShortenUrlResponse(request.url, "http://localhost:5278/" + squid);
         }
     }
 }
