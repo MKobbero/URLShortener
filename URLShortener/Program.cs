@@ -1,4 +1,5 @@
 
+using URLShortener.Business;
 using URLShortener.Encoding;
 using URLShortener.Repository;
 
@@ -17,6 +18,8 @@ namespace URLShortener
             builder.Services.AddEndpointsApiExplorer();
             builder.Services.AddSwaggerGen();
 
+            //Dependency registrations
+            builder.Services.AddSingleton<IUrlShortener, UrlShortener>();
             builder.Services.AddSingleton<IUrlRepository, UrlRepository>();
             builder.Services.AddSingleton<IShortUrlEncoder, ShortUrlEncoder>();
 
@@ -33,8 +36,6 @@ namespace URLShortener
             app.UseAuthorization();
 
             app.ConfigureEnpoints();
-
-            
 
             app.Run();
         }

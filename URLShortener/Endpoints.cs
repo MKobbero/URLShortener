@@ -1,4 +1,7 @@
-﻿using Sqids;
+﻿using Microsoft.AspNetCore.Http.HttpResults;
+using Microsoft.AspNetCore.Mvc;
+using Sqids;
+using URLShortener.Business;
 using URLShortener.Contracts;
 using URLShortener.Encoding;
 using URLShortener.Repository;
@@ -18,39 +21,28 @@ namespace URLShortener
                 .WithOpenApi();
         }
 
-        private static void GetUrl(HttpContext context, IUrlRepository urlRepository)
+        private static Results<RedirectHttpResult, NotFound> GetUrl(HttpContext context, IUrlShortener urlShortener)
         {
-            string shortUrl = context.Request.Path.Value.Remove(0,1);
+            var shortUrl = context.Request.Path.Value;
+            var result = urlShortener.GetUrl(shortUrl);
 
-            string longUrl = urlRepository.GetLongUrl(shortUrl);
-            if (longUrl == null)
-            {
-                context.Response.StatusCode = 404;
-                return;
-            }
+            if (result.Success == false)
+                return TypedResults.NotFound();
 
-            context.Response.Redirect(longUrl);
-            return;
-
-            //if (result == null)
-            //    return TypedResults.NotFound();
-            //else
-            //    return TypedResults.Ok(result);
+            return TypedResults.Redirect(result.LongUrl);
         }
 
-        private static ShortenUrlResponse ShortenUrl(HttpContext context, 
+        private static Results<Ok<ShortenUrlResponse>, BadRequest> ShortenUrl(HttpContext context, 
             IShortUrlEncoder shortUrlEncoder,
-            IUrlRepository urlRepository, 
+            IUrlShortener urlShortener, 
             ShortenUrlRequest request)
         {
-            string squid;
-            do
-            {
-                squid = shortUrlEncoder.GetNextSquid();
-            }
-            while (!urlRepository.Add(squid, request.url));
+            var result = urlShortener.ShortenUrl(request.url);
 
-            return new ShortenUrlResponse(request.url, "http://localhost:5278/" + squid);
+            if (result.Success == false)
+                return TypedResults.BadRequest();
+
+            return TypedResults.Ok(new ShortenUrlResponse(request.url, "http://localhost:5278/" + result.ShortUrl));
         }
     }
 }
