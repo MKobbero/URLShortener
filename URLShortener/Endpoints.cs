@@ -42,7 +42,7 @@ namespace URLShortener
             if (result.Success == false)
                 return TypedResults.BadRequest();
 
-            return TypedResults.Ok(new ShortenUrlResponse(request.url, "http://localhost:5278/" + result.ShortUrl));
+            return TypedResults.Ok(new ShortenUrlResponse(request.url, "https://localhost:7008/" + result.ShortUrl));
         }
     }
 }
